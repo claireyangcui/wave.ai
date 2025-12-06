@@ -117,6 +117,23 @@ function calculateEnergyScore(
 }
 
 /**
+ * Determine trend direction from price change
+ */
+function determineTrendDirection(priceChangePercent24h: number): 'rising' | 'falling' | 'stable' {
+  if (priceChangePercent24h > 1) return 'rising';
+  if (priceChangePercent24h < -1) return 'falling';
+  return 'stable';
+}
+
+/**
+ * Calculate trend strength (0-1)
+ */
+function calculateTrendStrength(priceChangePercent24h: number): number {
+  // Map absolute change to 0-1, capped at 10%
+  return Math.min(Math.abs(priceChangePercent24h) / 10, 1);
+}
+
+/**
  * Tool: Derive music parameters from market data
  */
 export function deriveMusicParams(
@@ -136,7 +153,9 @@ export function deriveMusicParams(
     marketData.volume24h,
     marketData.priceChangePercent24h
   );
-  const intensity = energyScore; // Can be differentiated later
+  const intensity = energyScore;
+  const trendDirection = determineTrendDirection(marketData.priceChangePercent24h);
+  const trendStrength = calculateTrendStrength(marketData.priceChangePercent24h);
 
   return {
     tempo: Math.round(tempo),
@@ -147,6 +166,8 @@ export function deriveMusicParams(
     drumDensity: Math.round(drumDensity * 100) / 100,
     intensity: Math.round(intensity * 100) / 100,
     energyScore: Math.round(energyScore * 100) / 100,
+    trendDirection,
+    trendStrength: Math.round(trendStrength * 100) / 100,
   };
 }
 

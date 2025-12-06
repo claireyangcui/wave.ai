@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import type { Instrument, DJPreset, MarketMoment } from '@wave-ai/shared';
 import { api } from '../lib/api';
 import MarketDataSelector from './MarketDataSelector';
-import LoadingSpinner from './LoadingSpinner';
 import { toast } from './Toast';
 
 const INSTRUMENTS: Instrument[] = ['BTC', 'ETH', 'SOL', 'AVAX', 'MATIC'];
@@ -58,7 +57,8 @@ interface GenreCarouselProps {
 
 export default function GenreCarousel({ onMomentGenerated }: GenreCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedInstrument, setSelectedInstrument] = useState<Instrument>('BTC');
+  // Default to middle card (SOL)
+  const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(INSTRUMENTS[Math.floor(INSTRUMENTS.length / 2)]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -235,16 +235,7 @@ export default function GenreCarousel({ onMomentGenerated }: GenreCarouselProps)
             }}
           />
           
-          <span className="relative">
-            {isGenerating ? (
-              <span className="flex items-center gap-3">
-                <LoadingSpinner />
-                <span>Generating...</span>
-              </span>
-            ) : (
-              <span>Remix</span>
-            )}
-          </span>
+          <span className="relative">Remix</span>
         </button>
 
         {/* Swipe hint */}
@@ -252,6 +243,9 @@ export default function GenreCarousel({ onMomentGenerated }: GenreCarouselProps)
           Swipe or use arrow keys to browse genres
         </p>
       </div>
+
+      {/* Gradient fade to black at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
 
       {/* Side navigation - clickable genre names */}
       <button

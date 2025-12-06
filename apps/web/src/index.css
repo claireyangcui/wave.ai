@@ -7,6 +7,7 @@
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
+    cursor: none !important;
   }
   
   html, body, #root {

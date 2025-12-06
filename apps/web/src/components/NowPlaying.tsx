@@ -10,9 +10,11 @@ interface NowPlayingProps {
   moment: MarketMoment;
   isPlaying: boolean;
   onPlayPause: (playing: boolean) => void;
+  onTimeUpdate?: (time: number) => void;
+  onDurationChange?: (duration: number) => void;
 }
 
-export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayingProps) {
+export default function NowPlaying({ moment, isPlaying, onPlayPause, onTimeUpdate, onDurationChange }: NowPlayingProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -24,11 +26,18 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      onTimeUpdate?.(audio.currentTime);
+    };
+    const updateDuration = () => {
+      setDuration(audio.duration);
+      onDurationChange?.(audio.duration);
+    };
     const handleEnded = () => {
       onPlayPause(false);
       setCurrentTime(0);
+      onTimeUpdate?.(0);
     };
 
     audio.addEventListener('timeupdate', updateTime);
@@ -40,7 +49,7 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [moment.audioUrl, onPlayPause]);
+  }, [moment.audioUrl, onPlayPause, onTimeUpdate, onDurationChange]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -80,14 +89,10 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
 
   return (
     <>
-      <div className="h-24 bg-black border-t-2 border-gray-800 flex items-center px-8">
+      <div className="h-24 bg-black flex items-center px-8">
         <audio ref={audioRef} src={moment.audioUrl} preload="metadata" />
 
         <div className="flex-1 flex items-center gap-6">
-          <div className="w-12 h-12 border-2 border-cyan-400 bg-black flex items-center justify-center">
-            <span className="text-lg font-bold text-cyan-400">{moment.instrument}</span>
-          </div>
-
           <div className="flex-1 min-w-0">
             <div className="font-bold text-white mb-1 uppercase tracking-wide text-sm">
               {moment.instrument} — {moment.dj.replace('-', ' ').toUpperCase()}
@@ -102,7 +107,7 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
           <div className="flex items-center gap-4">
             <button
               onClick={() => onPlayPause(!isPlaying)}
-              className="w-10 h-10 bg-cyan-400 text-black flex items-center justify-center hover:bg-cyan-300 transition-colors border-2 border-cyan-400"
+              className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition-colors border-2 border-white"
             >
               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
             </button>
@@ -114,11 +119,11 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
               onClick={handleSeek}
             >
               <div
-                className="h-full bg-cyan-400 transition-all"
+                className="h-full bg-white transition-all"
                 style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-white opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{ left: `${duration ? (currentTime / duration) * 100 : 0}%`, marginLeft: '-4px' }}
               />
             </div>
@@ -139,7 +144,7 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
               step="0.01"
               value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className="w-20 accent-cyan-400"
+              className="w-20 accent-white"
             />
           </div>
 
@@ -147,7 +152,7 @@ export default function NowPlaying({ moment, isPlaying, onPlayPause }: NowPlayin
 
           <button
             onClick={() => setShowTipModal(true)}
-            className="px-4 py-2 bg-cyan-400 text-black font-bold uppercase tracking-wider text-xs hover:bg-cyan-300 transition-all flex items-center gap-2 border-2 border-cyan-400"
+            className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider text-xs hover:bg-gray-200 transition-all flex items-center gap-2 border-2 border-white"
           >
             <Coins className="w-3 h-3" />
             <span>Tip</span>

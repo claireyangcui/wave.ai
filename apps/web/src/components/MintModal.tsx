@@ -33,8 +33,26 @@ export default function MintModal({ moment, onClose, onSuccess }: MintModalProps
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-      <div className="bg-black border-2 border-gray-800 p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black/90 z-[9999] overflow-y-auto"
+      style={{ 
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        position: 'fixed',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div 
+          className="bg-black border-2 border-gray-800 p-8 w-full max-w-2xl rounded-lg my-8"
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white uppercase tracking-wider">Mint Market Moment</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
@@ -136,6 +154,7 @@ export default function MintModal({ moment, onClose, onSuccess }: MintModalProps
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

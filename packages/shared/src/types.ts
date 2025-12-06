@@ -23,6 +23,8 @@ export interface MusicParams {
   drumDensity: number; // 0-1
   intensity: number; // 0-1
   energyScore: number; // 0-1
+  trendDirection: 'rising' | 'falling' | 'stable'; // Melody direction follows market trend
+  trendStrength: number; // 0-1, how strong the trend is
 }
 
 export interface WaveformData {
