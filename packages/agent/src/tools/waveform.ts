@@ -67,3 +67,4 @@ function normalizePeak(value: number): number {
   return Math.max(0, Math.min(1, value / 32767));
 }
 
+

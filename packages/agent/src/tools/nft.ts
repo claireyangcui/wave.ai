@@ -45,3 +45,4 @@ function generateWaveformHash(waveform: any): string {
   return `0x${Math.abs(hash).toString(16).padStart(8, '0')}`;
 }
 
+

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import MainPane from './components/MainPane';
+import GenreCarousel from './components/GenreCarousel';
 import NowPlaying from './components/NowPlaying';
 import ToastContainer from './components/Toast';
 import type { MarketMoment } from '@wave-ai/shared';
@@ -27,12 +26,13 @@ function App() {
   const handleMomentGenerated = (moment: MarketMoment) => {
     setCurrentMoment(moment);
     setMoments(prev => [moment, ...prev]);
+    setIsPlaying(true);
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-black">
-      <Sidebar moments={moments} onSelectMoment={setCurrentMoment} />
-      <MainPane onMomentGenerated={handleMomentGenerated} />
+    <div className="h-screen overflow-hidden bg-black">
+      <GenreCarousel onMomentGenerated={handleMomentGenerated} />
+      
       {currentMoment && (
         <NowPlaying
           moment={currentMoment}
@@ -40,10 +40,10 @@ function App() {
           onPlayPause={setIsPlaying}
         />
       )}
+      
       <ToastContainer />
     </div>
   );
 }
 
 export default App;
-
